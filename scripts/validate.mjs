@@ -212,7 +212,51 @@ if (!existsSync(srcDir)) {
     : pass(`all ${refs.size} skill: references resolve to a real SKILL.md`);
 }
 
-head(`8. Relative links in docs resolve`);
+head(`8. README documents every skill and every command's skills`);
+const readme = readFileSync(R("README.md"), "utf8");
+const catalog = readme.slice(readme.indexOf("## Skills Catalog"));
+const listed = new Set([...catalog.matchAll(/^\|\s*`([a-z0-9-]+)`\s*\|/gm)].map((m) => m[1]));
+const undocumented = skillDirs.filter((d) => !listed.has(d));
+undocumented.length
+  ? fail(`missing from the README catalog: ${undocumented.join(", ")}`)
+  : pass(`all ${SKILL_COUNT} skills appear in the Skills Catalog`);
+// A skill a command invokes must be visible in that command's README row, or
+// readers plan around a phase that silently does more than documented.
+// Scope to the Commands table — the model table below it is also keyed by `/cmd`
+// but its columns hold model names, not skills.
+const commandTable = readme.slice(
+  readme.indexOf("## Commands"),
+  readme.indexOf("### Recommended model per command"),
+);
+const commandRows = [...commandTable.matchAll(/^\|\s*`\/([a-z]+)`\s*\|[^|]*\|([^|]*)\|/gm)];
+const rowGaps = commandRows.flatMap(([, cmd, invokes]) => {
+  const src = R(".claude", "commands", `${cmd}.md`);
+  if (!existsSync(src)) return [];
+  const refs = [...readFileSync(src, "utf8").matchAll(/skill:([a-z0-9-]+)/g)].map((m) => m[1]);
+  // Build lists standards generically ("the coding standard for the files you touch").
+  if (/coding standard/.test(invokes)) return [];
+  return [...new Set(refs)].filter((r) => !invokes.includes(r)).map((r) => `/${cmd} invokes ${r}`);
+});
+rowGaps.length
+  ? rowGaps.forEach((g) => fail(`README Commands table: ${g} but does not list it`))
+  : pass(`every command row lists the skills that command invokes`);
+
+head(`9. Version agrees everywhere`);
+const VERSION = JSON.parse(readFileSync(R("package.json"), "utf8")).version;
+const versions = {
+  "package.json": VERSION,
+  "plugin.json": JSON.parse(readFileSync(R("plugin.json"), "utf8")).version,
+  ".claude-plugin/plugin.json": JSON.parse(readFileSync(R(".claude-plugin/plugin.json"), "utf8")).version,
+  ".codex-plugin/plugin.json": JSON.parse(readFileSync(R(".codex-plugin/plugin.json"), "utf8")).version,
+  ".claude-plugin/marketplace.json": JSON.parse(readFileSync(R(".claude-plugin/marketplace.json"), "utf8")).metadata?.version,
+  // Hand-maintained blob and prose — nothing else regenerates these, so they drift silently.
+  "knowledge-base/index.html": (readFileSync(R("knowledge-base/index.html"), "utf8").match(/const DATA = (\{.*\});$/m) || []).slice(1).map((d) => JSON.parse(d).version)[0],
+  "README.md": (readFileSync(R("README.md"), "utf8").match(/^\*\*Version ([\d.]+)\*\*/m) || [])[1],
+};
+for (const [file, v] of Object.entries(versions))
+  v === VERSION ? pass(`${file} → ${v}`) : fail(`${file} → ${v ?? "not found"} (expected ${VERSION})`);
+
+head(`10. Relative links in docs resolve`);
 const docs = ["README.md", ...readdirSync(R("knowledge-base")).filter((f) => f.endsWith(".md")).map((f) => `knowledge-base/${f}`)];
 for (const doc of docs) {
   const t = readFileSync(R(doc), "utf8");

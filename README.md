@@ -2,6 +2,8 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
+**Version 1.4.0** · 22 skills · 5 commands · MIT
+
 22 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
 shelf of always-available reference and thinking-aid skills — into steps AI
@@ -169,8 +171,10 @@ Skills are plain Markdown — they work with any agent that accepts system promp
 Open your agent's chat and ask for a skill by name. The workflow skills follow
 the implementation path:
 
-- **Definition** — **`impl-strategy`** turns a task into a
-  `plans/<topic>/plan.md` artifact; **`jira-fetch`** pulls ticket context.
+- **Definition** — **`jira-fetch`** pulls ticket context; **`grill-me`**
+  adversarially stress-tests the approach before it is written down;
+  **`impl-strategy`** turns the hardened approach into a
+  `plans/<topic>/plan.md` artifact.
 - **Build** — write code against the coding standards: **`python-standard`**,
   **`dotnet-csharp-standard`**, **`taskfile-standard`**, and the
   **`angular-components`** / **`angular-state`** / **`angular-ui`** skills.
@@ -195,7 +199,7 @@ skills.
 
 | Command | Phase | Invokes |
 | --- | --- | --- |
-| `/define` | Definition | `impl-strategy` (+ `jira-fetch` for a ticket) |
+| `/define` | Definition | `jira-fetch` (for a ticket) → `grill-me` → `impl-strategy` |
 | `/build` | Build | the coding standard for the files you touch |
 | `/verify` | Verify | `thomas` |
 | `/review` | Review | `code-reviewer` → `security-and-hardening` → `code-simplification` (+ `objective-advisor`) |
@@ -280,13 +284,17 @@ Run it after adding a skill or editing a command — it fails loudly if
 ## Skills Catalog (22)
 
 Grouped by the implementation path — **definition → build → verify → review →
-ship** — plus the shelf. `open-knowledge` appears under both Ship and the shelf.
+ship** — plus the shelf. Two skills are listed twice: `grill-me` and
+`open-knowledge` live on the shelf but are also invoked directly by a phase
+command (`/define` and `/ship` respectively), so they appear under that phase
+as well. The count of 22 is unique skills, not table rows.
 
 ### Definition
 | Skill | Purpose |
 | --- | --- |
-| `impl-strategy` | Structured implementation plans (`plans/<topic>/plan.md`) |
 | `jira-fetch` | Fetch full Jira ticket details from a URL |
+| `grill-me` | Stress-test the approach before it becomes a plan — also on the shelf |
+| `impl-strategy` | Structured implementation plans (`plans/<topic>/plan.md`) |
 
 ### Build
 | Skill | Purpose |
