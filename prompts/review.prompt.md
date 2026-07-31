@@ -1,0 +1,13 @@
+---
+description: "Review the change — code health and reasoning — before it ships. [Copilot: Claude Sonnet 5 → escalate Claude Opus 5]"
+---
+
+Review the change for code health and sound reasoning before it ships.
+
+Argument: `$ARGUMENTS` — an optional branch name, or `local` for uncommitted changes (default: the current diff).
+
+1. Invoke `skill:code-reviewer` on the diff. It reviews across correctness, readability, architecture, security, and performance, and blocks only real defects.
+2. When the change touches user input, authentication, sessions, data storage, secrets, external integrations, or LLM features, invoke `skill:security-and-hardening` to threat-model and harden it — treating all external data and model output as hostile.
+3. Invoke `skill:code-simplification` on the changed files to flag (and, if asked, apply) readability and complexity cleanups beyond code-reviewer's readability axis — deep nesting, long functions, unclear names, duplicated logic.
+4. For a decision or architecture choice that needs pressure-testing, also invoke `skill:objective-advisor` to challenge the reasoning and rate its own certainty.
+5. Report findings by severity. Approve what improves code health; block only genuine defects.

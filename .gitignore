@@ -1,0 +1,7 @@
+node_modules/
+plans/
+.claude/*
+!.claude/commands/
+!.claude/skills/
+.env
+.DS_Store

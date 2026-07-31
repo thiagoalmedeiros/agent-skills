@@ -1,0 +1,17 @@
+{
+  "$comment": "Per-agent model recommendation appended to each generated command's description. Keyed by target, then command name. Claude Code's own hint is NOT here — it lives inline in .claude/commands/*.md, which Claude Code reads directly. Each agent exposes a different model catalog, so a hint is only ever emitted into that agent's own command files.",
+  "copilot": {
+    "define": "GPT-5.6 Sol → cheaper GPT-5.6 Terra",
+    "build": "GPT-5.6 Luna → escalate GPT-5.3-Codex",
+    "verify": "GPT-5.6 Terra → cheaper GPT-5.6 Luna",
+    "review": "Claude Sonnet 5 → escalate Claude Opus 5",
+    "ship": "GPT-5.6 Luna → escalate GPT-5.6 Terra"
+  },
+  "antigravity": {
+    "define": "Claude Opus 4.6 → cheaper Gemini 3.1 Pro",
+    "build": "Claude Sonnet 4.6 → escalate Claude Opus 4.6",
+    "verify": "Gemini 3.5 Flash → escalate Claude Sonnet 4.6",
+    "review": "Claude Opus 4.6 → cheaper Claude Sonnet 4.6",
+    "ship": "Gemini 3.5 Flash → escalate Claude Sonnet 4.6"
+  }
+}
