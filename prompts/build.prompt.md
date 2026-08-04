@@ -1,5 +1,5 @@
 ---
-description: "Build the next slice — implement against the project's coding standards, one reviewable batch at a time. [Copilot: **GPT-5.6 Luna** → GPT-5.3-Codex]"
+description: "Build the next slice — implement against the project's coding standards, one reviewable batch at a time. [Copilot: **GPT-5.6 Luna** → GPT-5.6 Terra]"
 ---
 
 Implement the next slice of the approved plan, held to the project's coding standards. There is **no dedicated implementer skill** — you write the code directly, but you must load the standard for the files you touch.

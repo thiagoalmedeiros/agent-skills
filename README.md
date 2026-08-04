@@ -225,17 +225,18 @@ direction. **Bold is where to start.** Bold on the left means the right-hand mod
 the escalation when it stalls; bold on the right means the left-hand model is the
 budget drop for trivial work.
 
-| Command | Claude Code | Codex (effort) | Copilot | Antigravity |
+| Command | Claude Code | Codex | Copilot | Antigravity |
 | --- | --- | --- | --- | --- |
-| `/define` | Sonnet 5 → **Opus 5** | high → **xhigh** | GPT-5.6 Terra → **GPT-5.6 Sol** | Gemini 3.1 Pro → **Claude Opus 4.6** |
-| `/build` | **Sonnet 5** → Opus 5 | **medium** → high | **GPT-5.6 Luna** → GPT-5.3-Codex | **Claude Sonnet 4.6** → Claude Opus 4.6 |
-| `/verify` | Haiku 4.5 → **Sonnet 5** | low → **medium** | GPT-5.6 Luna → **GPT-5.6 Terra** | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
-| `/review` | Sonnet 5 → **Opus 5** | high → **xhigh** | **Claude Sonnet 5** → Claude Opus 5 | Claude Sonnet 4.6 → **Claude Opus 4.6** |
-| `/ship` | **Haiku 4.5** → Sonnet 5 | **low** → medium | **GPT-5.6 Luna** → GPT-5.6 Terra | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
+| `/define` | Sonnet 5 → **Opus 5** | GPT-5.6 Terra → **GPT-5.6 Sol** | GPT-5.6 Terra → **GPT-5.6 Sol** | Gemini 3.1 Pro → **Claude Opus 4.6** |
+| `/build` | **Sonnet 5** → Opus 5 | **GPT-5.6 Luna** → GPT-5.6 Terra | **GPT-5.6 Luna** → GPT-5.6 Terra | **Claude Sonnet 4.6** → Claude Opus 4.6 |
+| `/verify` | Haiku 4.5 → **Sonnet 5** | GPT-5.6 Luna → **GPT-5.6 Terra** | GPT-5.6 Luna → **GPT-5.6 Terra** | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
+| `/review` | Sonnet 5 → **Opus 5** | GPT-5.6 Terra → **GPT-5.6 Sol** | **Claude Sonnet 5** → Claude Opus 5 | Claude Sonnet 4.6 → **Claude Opus 4.6** |
+| `/ship` | **Haiku 4.5** → Sonnet 5 | **GPT-5.6 Luna** → GPT-5.6 Terra | **GPT-5.6 Luna** → GPT-5.6 Terra | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
 
-Codex is the odd column out: it exposes one coding model (GPT-5.3-Codex) behind a
-reasoning-effort dial rather than a model ladder, so it is graded by effort level —
-set with `/model` in the Codex CLI.
+Both OpenAI columns are the **general GPT ladder** — what a GPT plan gives you, not a
+coding-tuned variant such as `GPT-5.3-Codex`. They are identical apart from
+`/review`, where Copilot can also reach Claude models and Codex cannot. Codex users
+pick with `/model` in the CLI; Copilot users pick in the chat model dropdown.
 
 The reasoning is the same across agents, applied to each catalog: `/define` and
 `/review` are the two phases where being wrong is expensive — planning errors
@@ -272,8 +273,8 @@ hint, or if a Claude command file names a non-Claude model.
 - **Codex** — no repo commands. Codex custom prompts are deprecated and live only
   in `~/.codex/prompts/` (not shareable via a repo), so Codex users invoke the
   underlying **skills** directly (e.g. `@impl-strategy`) — the commands are
-  only thin wrappers over those skills anyway. Its per-phase reasoning effort is
-  in the table above.
+  only thin wrappers over those skills anyway. Its per-phase GPT model is in the
+  table above.
 
 The Claude `.md` files are the **single source**; the Antigravity `.toml` files
 and the Copilot `.prompt.md` files are generated from them. After editing a

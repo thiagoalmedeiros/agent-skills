@@ -3,7 +3,7 @@
   "$notation": "Every hint reads cheapest → most expensive, always in that direction. Bold marks where to start: bold on the left means the right-hand model is the escalation; bold on the right means the left-hand model is the budget drop.",
   "copilot": {
     "define": "GPT-5.6 Terra → **GPT-5.6 Sol**",
-    "build": "**GPT-5.6 Luna** → GPT-5.3-Codex",
+    "build": "**GPT-5.6 Luna** → GPT-5.6 Terra",
     "verify": "GPT-5.6 Luna → **GPT-5.6 Terra**",
     "review": "**Claude Sonnet 5** → Claude Opus 5",
     "ship": "**GPT-5.6 Luna** → GPT-5.6 Terra"
