@@ -1,5 +1,5 @@
 ---
-description: "Review the change — code health and reasoning — before it ships. [Copilot: Claude Sonnet 5 → escalate Claude Opus 5]"
+description: "Review the change — code health and reasoning — before it ships. [Copilot: **Claude Sonnet 5** → Claude Opus 5]"
 ---
 
 Review the change for code health and sound reasoning before it ships.

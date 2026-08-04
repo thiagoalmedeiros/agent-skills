@@ -1,5 +1,5 @@
 ---
-description: "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Claude: Opus 5 → cheaper Sonnet 5]"
+description: "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Claude: Sonnet 5 → **Opus 5**]"
 ---
 
 Invoke `skill:impl-strategy` to turn the request into a structured plan at `plans/<topic>/plan.md` **before any code is written**.

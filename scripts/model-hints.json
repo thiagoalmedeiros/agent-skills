@@ -1,17 +1,18 @@
 {
-  "$comment": "Per-agent model recommendation appended to each generated command's description. Keyed by target, then command name. Claude Code's own hint is NOT here — it lives inline in .claude/commands/*.md, which Claude Code reads directly. Each agent exposes a different model catalog, so a hint is only ever emitted into that agent's own command files.",
+  "$comment": "Per-agent model recommendation appended to each generated command's description. Keyed by target, then command name. Claude Code's own hint is NOT here — it lives inline in .claude/commands/*.md, which Claude Code reads directly. Codex is absent by design: it ships no repo command files, so its recommendation is README-only. Each agent exposes a different model catalog, so a hint is only ever emitted into that agent's own command files.",
+  "$notation": "Every hint reads cheapest → most expensive, always in that direction. Bold marks where to start: bold on the left means the right-hand model is the escalation; bold on the right means the left-hand model is the budget drop.",
   "copilot": {
-    "define": "GPT-5.6 Sol → cheaper GPT-5.6 Terra",
-    "build": "GPT-5.6 Luna → escalate GPT-5.3-Codex",
-    "verify": "GPT-5.6 Terra → cheaper GPT-5.6 Luna",
-    "review": "Claude Sonnet 5 → escalate Claude Opus 5",
-    "ship": "GPT-5.6 Luna → escalate GPT-5.6 Terra"
+    "define": "GPT-5.6 Terra → **GPT-5.6 Sol**",
+    "build": "**GPT-5.6 Luna** → GPT-5.3-Codex",
+    "verify": "GPT-5.6 Luna → **GPT-5.6 Terra**",
+    "review": "**Claude Sonnet 5** → Claude Opus 5",
+    "ship": "**GPT-5.6 Luna** → GPT-5.6 Terra"
   },
   "antigravity": {
-    "define": "Claude Opus 4.6 → cheaper Gemini 3.1 Pro",
-    "build": "Claude Sonnet 4.6 → escalate Claude Opus 4.6",
-    "verify": "Gemini 3.5 Flash → escalate Claude Sonnet 4.6",
-    "review": "Claude Opus 4.6 → cheaper Claude Sonnet 4.6",
-    "ship": "Gemini 3.5 Flash → escalate Claude Sonnet 4.6"
+    "define": "Gemini 3.1 Pro → **Claude Opus 4.6**",
+    "build": "**Claude Sonnet 4.6** → Claude Opus 4.6",
+    "verify": "**Gemini 3.5 Flash** → Claude Sonnet 4.6",
+    "review": "Claude Sonnet 4.6 → **Claude Opus 4.6**",
+    "ship": "**Gemini 3.5 Flash** → Claude Sonnet 4.6"
   }
 }

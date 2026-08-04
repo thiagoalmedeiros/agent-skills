@@ -1,5 +1,5 @@
 ---
-description: "Ship it — sync docs, then merge and validate against the Definition of Done. [Claude: Haiku 4.5 → escalate Sonnet 5]"
+description: "Ship it — sync docs, then merge and validate against the Definition of Done. [Claude: **Haiku 4.5** → Sonnet 5]"
 ---
 
 Ship the change: sync the docs, then merge and validate against the Definition of Done.

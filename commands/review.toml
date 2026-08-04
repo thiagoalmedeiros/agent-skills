@@ -1,4 +1,4 @@
-description = "Review the change — code health and reasoning — before it ships. [Antigravity: Claude Opus 4.6 → cheaper Claude Sonnet 4.6]"
+description = "Review the change — code health and reasoning — before it ships. [Antigravity: Claude Sonnet 4.6 → **Claude Opus 4.6**]"
 
 prompt = """
 Review the change for code health and sound reasoning before it ships.

@@ -1,5 +1,5 @@
 ---
-description: "Ship it — sync docs, then merge and validate against the Definition of Done. [Copilot: GPT-5.6 Luna → escalate GPT-5.6 Terra]"
+description: "Ship it — sync docs, then merge and validate against the Definition of Done. [Copilot: **GPT-5.6 Luna** → GPT-5.6 Terra]"
 ---
 
 Ship the change: sync the docs, then merge and validate against the Definition of Done.

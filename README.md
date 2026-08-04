@@ -2,7 +2,7 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
-**Version 1.4.0** · 22 skills · 5 commands · MIT
+**Version 1.4.1** · 22 skills · 5 commands · MIT
 
 22 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
@@ -218,20 +218,36 @@ line-ups. The hint is per-file, never shared:
 | `.claude/commands/*.md` | Claude Code | `[Claude: …]` |
 | `prompts/*.prompt.md` | VS Code Copilot | `[Copilot: …]` |
 | `commands/*.toml` | Antigravity CLI | `[Antigravity: …]` |
+| — | Codex | none — no command files, so the table below is its only record |
 
-| Command | Claude Code | Copilot | Antigravity |
-| --- | --- | --- | --- |
-| `/define` | **Opus 5** → Sonnet 5 | **GPT-5.6 Sol** → Terra | **Claude Opus 4.6** → Gemini 3.1 Pro |
-| `/build` | **Sonnet 5** → Opus 5 | **GPT-5.6 Luna** → GPT-5.3-Codex | **Claude Sonnet 4.6** → Opus 4.6 |
-| `/verify` | **Sonnet 5** → Haiku 4.5 | **GPT-5.6 Terra** → Luna | **Gemini 3.5 Flash** → Sonnet 4.6 |
-| `/review` | **Opus 5** → Sonnet 5 | **Claude Sonnet 5** → Opus 5 | **Claude Opus 4.6** → Sonnet 4.6 |
-| `/ship` | **Haiku 4.5** → Sonnet 5 | **GPT-5.6 Luna** → Terra | **Gemini 3.5 Flash** → Sonnet 4.6 |
+**Notation.** Every pair reads **cheapest → most expensive**, always in that
+direction. **Bold is where to start.** Bold on the left means the right-hand model is
+the escalation when it stalls; bold on the right means the left-hand model is the
+budget drop for trivial work.
+
+| Command | Claude Code | Codex (effort) | Copilot | Antigravity |
+| --- | --- | --- | --- | --- |
+| `/define` | Sonnet 5 → **Opus 5** | high → **xhigh** | GPT-5.6 Terra → **GPT-5.6 Sol** | Gemini 3.1 Pro → **Claude Opus 4.6** |
+| `/build` | **Sonnet 5** → Opus 5 | **medium** → high | **GPT-5.6 Luna** → GPT-5.3-Codex | **Claude Sonnet 4.6** → Claude Opus 4.6 |
+| `/verify` | Haiku 4.5 → **Sonnet 5** | low → **medium** | GPT-5.6 Luna → **GPT-5.6 Terra** | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
+| `/review` | Sonnet 5 → **Opus 5** | high → **xhigh** | **Claude Sonnet 5** → Claude Opus 5 | Claude Sonnet 4.6 → **Claude Opus 4.6** |
+| `/ship` | **Haiku 4.5** → Sonnet 5 | **low** → medium | **GPT-5.6 Luna** → GPT-5.6 Terra | **Gemini 3.5 Flash** → Claude Sonnet 4.6 |
+
+Codex is the odd column out: it exposes one coding model (GPT-5.3-Codex) behind a
+reasoning-effort dial rather than a model ladder, so it is graded by effort level —
+set with `/model` in the Codex CLI.
 
 The reasoning is the same across agents, applied to each catalog: `/define` and
 `/review` are the two phases where being wrong is expensive — planning errors
-propagate and missed defects ship — so they get the strongest reasoning model.
-`/build`, `/verify`, and `/ship` are high-volume and mostly routine, so they start
-cheap. **Attempt on the primary, escalate if it hasn't converged in ~3 turns.**
+propagate and missed defects ship — so they start on the strongest reasoning model
+and drop a tier only for trivial changes. `/build` and `/ship` are high-volume and
+mostly routine, so they start cheap and escalate. `/verify` sits between: reading a
+failing suite takes more than the bottom tier, so it starts mid and drops only for
+trivial batches. **Escalate if the starting model hasn't converged in ~3 turns.**
+
+Two columns start a tier lower than that rule implies, deliberately: Copilot `/review`
+(the credit math below makes trying the cheaper model first nearly free) and
+Antigravity `/verify` (Gemini 3.5 Flash already clears a routine batch).
 
 This matters most on Copilot, which bills usage-based **AI credits** (1 credit =
 $0.01) against input + output tokens — making model choice a direct multiplier on
@@ -242,8 +258,9 @@ completions and Next Edit Suggestions are never billed.
 
 The Claude Code hint lives inline in the source `description`; the other two come
 from [scripts/model-hints.json](scripts/model-hints.json) and are substituted at
-generation time. `npm test` fails if a target is missing a hint, or if a Claude
-command file names a non-Claude model.
+generation time. Codex ships no command file, so it has no hint entry — the table
+above is where its recommendation lives. `npm test` fails if a target is missing a
+hint, or if a Claude command file names a non-Claude model.
 
 **Availability by agent:**
 
@@ -255,7 +272,8 @@ command file names a non-Claude model.
 - **Codex** — no repo commands. Codex custom prompts are deprecated and live only
   in `~/.codex/prompts/` (not shareable via a repo), so Codex users invoke the
   underlying **skills** directly (e.g. `@impl-strategy`) — the commands are
-  only thin wrappers over those skills anyway.
+  only thin wrappers over those skills anyway. Its per-phase reasoning effort is
+  in the table above.
 
 The Claude `.md` files are the **single source**; the Antigravity `.toml` files
 and the Copilot `.prompt.md` files are generated from them. After editing a

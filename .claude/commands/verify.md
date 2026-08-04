@@ -1,5 +1,5 @@
 ---
-description: "Verify the batch — run every check first-hand; only witnessed passing output counts. [Claude: Sonnet 5 → cheaper Haiku 4.5]"
+description: "Verify the batch — run every check first-hand; only witnessed passing output counts. [Claude: Haiku 4.5 → **Sonnet 5**]"
 ---
 
 Invoke `skill:thomas` to validate the current batch by first-hand execution — no claims accepted on trust.

@@ -1,6 +1,6 @@
 {
   "name": "agent-skills",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Production-grade SDLC skills for AI coding agents.",
   "scripts": {
     "commands": "node scripts/generate-commands.mjs",

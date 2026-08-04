@@ -1,4 +1,4 @@
-description = "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Antigravity: Claude Opus 4.6 → cheaper Gemini 3.1 Pro]"
+description = "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Antigravity: Gemini 3.1 Pro → **Claude Opus 4.6**]"
 
 prompt = """
 Invoke `skill:impl-strategy` to turn the request into a structured plan at `plans/<topic>/plan.md` **before any code is written**.

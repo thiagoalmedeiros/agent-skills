@@ -1,6 +1,6 @@
 {
   "name": "agentic-sdlc",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Production-grade SDLC skills for AI coding agents — the definition → build → verify → review → ship path, plus coding standards and tooling setup.",
   "author": {
     "name": "Thiago Medeiros"

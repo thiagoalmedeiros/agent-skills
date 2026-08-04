@@ -1,5 +1,5 @@
 ---
-description: "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Copilot: GPT-5.6 Sol → cheaper GPT-5.6 Terra]"
+description: "Define the work — turn a task or Jira ticket into a structured implementation plan before any code. [Copilot: GPT-5.6 Terra → **GPT-5.6 Sol**]"
 ---
 
 Invoke `skill:impl-strategy` to turn the request into a structured plan at `plans/<topic>/plan.md` **before any code is written**.

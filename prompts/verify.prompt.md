@@ -1,5 +1,5 @@
 ---
-description: "Verify the batch — run every check first-hand; only witnessed passing output counts. [Copilot: GPT-5.6 Terra → cheaper GPT-5.6 Luna]"
+description: "Verify the batch — run every check first-hand; only witnessed passing output counts. [Copilot: GPT-5.6 Luna → **GPT-5.6 Terra**]"
 ---
 
 Invoke `skill:thomas` to validate the current batch by first-hand execution — no claims accepted on trust.

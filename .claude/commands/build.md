@@ -1,5 +1,5 @@
 ---
-description: "Build the next slice — implement against the project's coding standards, one reviewable batch at a time. [Claude: Sonnet 5 → escalate Opus 5]"
+description: "Build the next slice — implement against the project's coding standards, one reviewable batch at a time. [Claude: **Sonnet 5** → Opus 5]"
 ---
 
 Implement the next slice of the approved plan, held to the project's coding standards. There is **no dedicated implementer skill** — you write the code directly, but you must load the standard for the files you touch.

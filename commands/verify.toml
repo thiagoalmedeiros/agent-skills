@@ -1,4 +1,4 @@
-description = "Verify the batch — run every check first-hand; only witnessed passing output counts. [Antigravity: Gemini 3.5 Flash → escalate Claude Sonnet 4.6]"
+description = "Verify the batch — run every check first-hand; only witnessed passing output counts. [Antigravity: **Gemini 3.5 Flash** → Claude Sonnet 4.6]"
 
 prompt = """
 Invoke `skill:thomas` to validate the current batch by first-hand execution — no claims accepted on trust.

@@ -1,5 +1,5 @@
 ---
-description: "Review the change — code health and reasoning — before it ships. [Claude: Opus 5 → cheaper Sonnet 5]"
+description: "Review the change — code health and reasoning — before it ships. [Claude: Sonnet 5 → **Opus 5**]"
 ---
 
 Review the change for code health and sound reasoning before it ships.
