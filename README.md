@@ -2,7 +2,7 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
-**Version 1.4.1** · 22 skills · 5 commands · MIT
+**Version 1.5.0** · 22 skills · 5 commands · MIT
 
 22 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
@@ -354,7 +354,7 @@ _No orchestrated implementer skill — the agent writes code directly against th
 | `open-knowledge` | Read/write docs in the Open Knowledge Format (OKF) |
 | `lessons-learned` | Per-plan `lessons.md` lifecycle (init / read / append) |
 | `devcontainer-setup` | Set up or audit a `.devcontainer/` environment |
-| `graphify-setup` | Install the graphify codebase knowledge graph |
+| `graphify-setup` | Set up, update, and re-sync the graphify codebase knowledge graph |
 | `browser-testing` | Verify browser-facing changes by driving a real browser interactively |
 | `freshness-check` | Validate version-sensitive knowledge against live registries and the current web before acting on it |
 
