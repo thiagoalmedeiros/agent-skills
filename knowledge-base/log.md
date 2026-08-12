@@ -1,5 +1,10 @@
 # Update History
 
+## 2026-08-12
+
+* **Creation**: Added 4 arXiv paper references to [Resources](/resources/index.md), bringing the directory to 14: [Nonstandard Errors in AI Agents](/resources/nonstandard-errors-in-ai-agents.md), [SWE-Skills-Bench: Do Agent Skills Actually Help in Real-World Software Engineering?](/resources/swe-skills-bench.md), [SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks](/resources/slopcodebench.md), and [Less Context, Better Agents: Efficient Context Engineering for Long-Horizon Tool-Using LLM Agents](/resources/less-context-better-agents.md). The two skills benchmarks (`SWE-Skills-Bench`, `SlopCodeBench`) bear directly on this repository's premise; the other two cover agent reproducibility and context engineering.
+* **Update**: Listed the four new papers in [Resources](/resources/index.md).
+
 ## 2026-07-30
 
 * **Update**: Corrected the skill catalog in [index.html](/index.html) so the **Ship** phase lists `docs-sync`, `open-knowledge`, and `merge-and-validate`, matching the `/ship` command now that it names the `docs-sync` → `open-knowledge` chain explicitly. `open-knowledge` is deliberately listed under both **Ship** and the **Shelf**, and its per-skill `areas` field was updated to `["ship","shelf"]` to keep the embedded `DATA` blob internally consistent. The Ship phase description was reworded to lead with the doc step, matching the command's actual order.
