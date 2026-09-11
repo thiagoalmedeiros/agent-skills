@@ -1,0 +1,19 @@
+{
+  "name": "agent-skills",
+  "version": "3.0.1",
+  "description": "Production-grade SDLC skills for AI coding agents.",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "test": "node scripts/validate.mjs"
+  },
+  "keywords": [
+    "sdlc",
+    "skills",
+    "agent-skills",
+    "claude",
+    "copilot",
+    "codex"
+  ],
+  "license": "MIT",
+  "private": true
+}

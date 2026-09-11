@@ -1,0 +1,13 @@
+{
+  "name": "agentic-sdlc",
+  "version": "3.0.1",
+  "description": "Production-grade SDLC skills for AI coding agents — the definition → build → verify → review → ship path, plus security hardening and tooling setup.",
+  "author": {
+    "name": "Thiago Medeiros"
+  },
+  "homepage": "https://github.com/thiagoalmedeiros/agent-skills",
+  "repository": "https://github.com/thiagoalmedeiros/agent-skills",
+  "license": "MIT",
+  "keywords": ["sdlc", "skills", "planning", "code-review", "validation", "documentation"],
+  "skills": "./skills/"
+}

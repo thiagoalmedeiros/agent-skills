@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - path: ../.env
+        required: false
+    volumes:
+      - ..:/workspaces/agent-skills:cached
+    command: sleep infinity
