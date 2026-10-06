@@ -3,7 +3,7 @@ type: Setup Guide
 title: OpenCode Setup
 description: Use the skills in OpenCode via AGENTS.md and the skill tool.
 tags: [setup, integration, opencode]
-timestamp: 2026-07-12T16:30:00Z
+generated: { by: human:thiagomedeiros, at: 2026-07-12T16:30:00Z }
 ---
 
 # OpenCode Setup
@@ -17,7 +17,7 @@ project instructions and can load a `SKILL.md` on demand via its `skill` tool.
 
    ```bash
    git clone https://github.com/thiagoalmedeiros/agent-skills.git
-   cp -R agent-skills/skills ./skills
+   cp -R agent-skills/plugins/agentic-sdlc/skills ./skills
    # or: npx skills add thiagoalmedeiros/agent-skills
    ```
 

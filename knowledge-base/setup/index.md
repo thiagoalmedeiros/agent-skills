@@ -11,4 +11,4 @@ Started** for the universal path, then jump to your agent's guide. The
 - [Windsurf Setup](/setup/windsurf-setup.md) — Use the skills in Windsurf via workspace rules and Cascade memories.
 - [OpenCode Setup](/setup/opencode-setup.md) — Use the skills in OpenCode via AGENTS.md and the skill tool.
 - [GitHub Copilot Setup](/setup/copilot-setup.md) — Use the skills in GitHub Copilot via copilot-instructions.md or workspace files.
-- [Codex Setup](/setup/codex-setup.md) — Install the skills in Codex as a native plugin that reads the root skills/ directory.
+- [Codex Setup](/setup/codex-setup.md) — Install the skills in Codex as a native plugin from the repository marketplace.

@@ -3,13 +3,13 @@ type: Guide
 title: Getting Started
 description: How to install and use the skills in any agent — the universal skills CLI, the manual copy path, and links to per-tool guides.
 tags: [setup, getting-started, install]
-timestamp: 2026-09-10T00:00:00Z
+generated: { by: human:thiagomedeiros, at: 2026-09-10T00:00:00Z }
 ---
 
 # Getting Started
 
 **agent-skills** is a light, skills-only repository. Every capability
-is a plain-Markdown `SKILL.md` under `skills/<name>/SKILL.md` — there are no
+is a plain-Markdown `SKILL.md` under `plugins/agentic-sdlc/skills/<name>/SKILL.md` — there are no
 agent personas, no slash-command or prompt files, and no install CLI. Any agent that can read
 instruction files can use these skills.
 
@@ -31,7 +31,7 @@ for skills or instructions:
 
 ```bash
 git clone https://github.com/thiagoalmedeiros/agent-skills.git
-cp -R agent-skills/skills/<skill-name> <your-agents-skills-dir>/
+cp -R agent-skills/plugins/agentic-sdlc/skills/<skill-name> <your-agents-skills-dir>/
 ```
 
 Each skill's `description` frontmatter is what the agent matches a request
@@ -54,4 +54,4 @@ Prefer a first-class integration? See the per-tool guides:
 ## What's in the catalog
 
 Open [`index.html`](/index.html) in a browser for a visual map of all 20
-skills, or browse [`skills/`](/../skills/) directly.
+skills, or browse [`plugins/agentic-sdlc/skills/`](/../plugins/agentic-sdlc/skills/) directly.

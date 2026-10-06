@@ -3,16 +3,19 @@ type: Setup Guide
 title: GitHub Copilot Setup
 description: Install the skills in VS Code Copilot as a native agent plugin from the repo URL, or use them as workspace instructions.
 tags: [setup, integration, github-copilot]
-timestamp: 2026-09-10T00:00:00Z
+generated: { by: human:thiagomedeiros, at: 2026-09-10T00:00:00Z }
 ---
 
 # GitHub Copilot Setup
 
-VS Code Copilot installs this repository as a native
+VS Code Copilot installs the `agentic-sdlc` plugin from this repository as a native
 [agent plugin](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
-The root [`plugin.json`](/../plugin.json) manifest is Copilot's own plugin
-format, and it points Copilot at the root `skills/` directory
-(`"skills": "./skills/"`) — the same manifest Antigravity reads.
+The repository is a marketplace: Copilot reads
+[`.claude-plugin/marketplace.json`](/../.claude-plugin/marketplace.json), which
+lists the plugin at `./plugins/agentic-sdlc`. That folder's
+[`plugin.json`](/../plugins/agentic-sdlc/plugin.json) is Copilot's own plugin format, and it
+points Copilot at the plugin's `skills/` directory (`"skills": "./skills/"`) —
+the same manifest Antigravity reads.
 
 > This repo is **skills-only** — it does not ship Copilot agent personas (there
 > is no `agents/` directory). Copilot loads the `SKILL.md` workflows and
@@ -31,7 +34,8 @@ https://github.com/thiagoalmedeiros/agent-skills.git
 Copilot accepts several URL forms: the `owner/repo` shorthand
 (`thiagoalmedeiros/agent-skills`), a full HTTPS `.git` URL, an SSH URL
 (`git@github.com:thiagoalmedeiros/agent-skills.git`), or a `file:///` path to a
-local clone. VS Code clones the repo and installs the plugin.
+local clone. VS Code clones the repo, finds the marketplace, and installs the
+plugin it lists.
 
 ## Install from a local clone
 
@@ -46,7 +50,7 @@ the clone.
 
 Once installed, the skills are available to Copilot's agent and activate based
 on each skill's `description`. You can also point Copilot Chat at a specific
-workflow with `#file:skills/impl-strategy/SKILL.md`.
+workflow with `#file:plugins/agentic-sdlc/skills/impl-strategy/SKILL.md`.
 
 ## Phase skills
 
@@ -71,18 +75,19 @@ bodies. Make the skills available in the workspace with:
 
 ```bash
 git clone https://github.com/thiagoalmedeiros/agent-skills.git
-cp -R agent-skills/skills ./skills
+cp -R agent-skills/plugins/agentic-sdlc/skills ./skills
 # or: npx skills add thiagoalmedeiros/agent-skills
 ```
 
 ## Troubleshooting
 
-- **Skills not loading** — Copilot detects the plugin format by checking, in
-  order, `.plugin/plugin.json`, the root `plugin.json`,
-  `.github/plugin/plugin.json`, then `.claude-plugin/plugin.json`. This repo is
-  detected via the root `plugin.json`; confirm it declares
-  `"skills": "./skills/"` and that `skills/<name>/SKILL.md` files exist with
-  valid frontmatter.
+- **Skills not loading** — Copilot first looks for a marketplace file
+  (`marketplace.json`, `.plugin/marketplace.json`,
+  `.github/plugin/marketplace.json`, then `.claude-plugin/marketplace.json`) and
+  only falls back to a single plugin at the repository root when it finds none.
+  This repo is detected via `.claude-plugin/marketplace.json`; confirm it lists
+  `./plugins/agentic-sdlc`, that `plugins/agentic-sdlc/plugin.json` declares `"skills": "./skills/"`, and that
+  `skills/<name>/SKILL.md` files exist with valid frontmatter.
 - **Plugin not found** — make sure you passed the full `.git` URL (or a valid
   local path) and that you have network/SSH access to GitHub.
 - **Review before installing** — plugins can ship hooks and MCP servers that run

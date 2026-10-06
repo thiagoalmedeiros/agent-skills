@@ -1,3 +1,7 @@
+---
+okf_version: "0.2"
+---
+
 # Agentic SDLC Wizard — Knowledge Base
 
 This is the Open Knowledge Format (OKF) documentation bundle for the
@@ -19,6 +23,6 @@ bundle (a static catalog of the skills).
 - [Resources](/resources/index.md) — external research papers (arXiv) relevant to agent skills, harnesses, and multi-agent systems.
 
 The skills themselves are **not** duplicated into this bundle. Each skill is
-documented by its own `SKILL.md` under [`skills/`](/../skills/) (the source of
+documented by its own `SKILL.md` under [`plugins/agentic-sdlc/skills/`](/../plugins/agentic-sdlc/skills/) (the source of
 truth), and all skills are browsable in the visual catalog
 ([`index.html`](/index.html)).

@@ -3,7 +3,7 @@ type: Setup Guide
 title: Cursor Setup
 description: Install the skills in Cursor — sync them into .cursor/skills/ and keep rules short.
 tags: [setup, integration, cursor]
-timestamp: 2026-07-12T16:30:00Z
+generated: { by: human:thiagomedeiros, at: 2026-07-12T16:30:00Z }
 ---
 
 # Cursor Setup
@@ -25,13 +25,13 @@ Treat this repo as a read-only upstream and sync skills inward:
 ```bash
 git clone https://github.com/thiagoalmedeiros/agent-skills.git
 mkdir -p .cursor/skills
-rsync -a --delete agent-skills/skills/ .cursor/skills/
+rsync -a --delete agent-skills/plugins/agentic-sdlc/skills/ .cursor/skills/
 ```
 
 Or copy just the skills you want:
 
 ```bash
-cp -R agent-skills/skills/impl-strategy .cursor/skills/
+cp -R agent-skills/plugins/agentic-sdlc/skills/impl-strategy .cursor/skills/
 ```
 
 The skills CLI can do this for you too:

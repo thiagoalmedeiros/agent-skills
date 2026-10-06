@@ -2,7 +2,7 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
-**Version 3.0.1** · 20 skills · MIT
+**Version 3.1.0** · 20 skills · MIT
 
 20 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
@@ -11,8 +11,11 @@ coding assistants follow consistently. Works with Claude Code, VS Code Copilot, 
 any agent that reads the `SKILL.md` format.
 
 Everything is **skill-only**: there are no agent persona definitions, no
-slash-command or prompt files, and no install CLI. The repository is just
-skills plus the manifests that let each agent discover them.
+slash-command or prompt files, and no install CLI. The repository is a
+**plugin marketplace**: `.claude-plugin/marketplace.json` lists each plugin, and
+each plugin lives in its own folder under [`plugins/`](plugins/) — today just
+[`agentic-sdlc`](plugins/agentic-sdlc/), the skills plus the manifests that let each agent
+discover them.
 
 > 🗺️ **Visual catalog:** open [index.html](knowledge-base/index.html) in a
 > browser for a game-style map of the skills.
@@ -61,7 +64,7 @@ Prefer a native integration? Pick your tool below.
 
 ```bash
 git clone https://github.com/thiagoalmedeiros/agent-skills.git
-claude --plugin-dir /path/to/agent-skills
+claude --plugin-dir /path/to/agent-skills/plugins/agentic-sdlc
 ```
 
 </details>
@@ -69,7 +72,7 @@ claude --plugin-dir /path/to/agent-skills
 <details>
 <summary><b>Cursor</b></summary>
 
-Put workflow skills under `.cursor/skills/` (sync from `skills/`) and short policies in `.cursor/rules/*.mdc` — do not paste full skills into rules. See [knowledge-base/setup/cursor-setup.md](knowledge-base/setup/cursor-setup.md).
+Put workflow skills under `.cursor/skills/` (sync from `plugins/agentic-sdlc/skills/`) and short policies in `.cursor/rules/*.mdc` — do not paste full skills into rules. See [knowledge-base/setup/cursor-setup.md](knowledge-base/setup/cursor-setup.md).
 
 </details>
 
@@ -78,7 +81,7 @@ Put workflow skills under `.cursor/skills/` (sync from `skills/`) and short poli
 
 Install as a native plugin so skills are auto-discovered. See [knowledge-base/setup/antigravity-setup.md](knowledge-base/setup/antigravity-setup.md).
 
-**Install from the repo:**
+**Install from the repo** — `agy` installs every plugin under `plugins/`:
 
 ```bash
 agy plugin install https://github.com/thiagoalmedeiros/agent-skills.git
@@ -101,13 +104,13 @@ Install as native skills for auto-discovery, or add to `GEMINI.md` for persisten
 **Install from the repo:**
 
 ```bash
-gemini skills install https://github.com/thiagoalmedeiros/agent-skills.git --path skills
+gemini skills install https://github.com/thiagoalmedeiros/agent-skills.git --path plugins/agentic-sdlc/skills
 ```
 
 **Install from a local clone:**
 
 ```bash
-gemini skills install ./agent-skills/skills/
+gemini skills install ./agent-skills/plugins/agentic-sdlc/skills/
 ```
 
 </details>
@@ -137,7 +140,7 @@ Install as a native VS Code [agent plugin](https://code.visualstudio.com/docs/co
 https://github.com/thiagoalmedeiros/agent-skills.git
 ```
 
-Copilot reads the root `plugin.json` (its native plugin format), which points at the root `skills/` directory (`skills` field) — so an install delivers every skill, including the `define`, `build`, `verify`, `review`, and `ship` phase skills. Prefer no plugin? Put skill content in `.github/copilot-instructions.md` instead. See [knowledge-base/setup/copilot-setup.md](knowledge-base/setup/copilot-setup.md).
+Copilot finds the marketplace in `.claude-plugin/marketplace.json`, follows it to `plugins/agentic-sdlc/`, and reads that folder's `plugin.json` (its native plugin format), which points at the plugin's `skills/` directory — so an install delivers every skill, including the `define`, `build`, `verify`, `review`, and `ship` phase skills. Prefer no plugin? Put skill content in `.github/copilot-instructions.md` instead. See [knowledge-base/setup/copilot-setup.md](knowledge-base/setup/copilot-setup.md).
 
 </details>
 
@@ -155,7 +158,7 @@ Install as a native Codex plugin (Codex CLI v0.122+):
 codex plugin marketplace add thiagoalmedeiros/agent-skills
 ```
 
-Codex reads the root `skills/` directory directly through `.codex-plugin/plugin.json`. Once installed, invoke a skill in chat with `$` (e.g., `$impl-strategy`) or pick it from `/skills`. See [knowledge-base/setup/codex-setup.md](knowledge-base/setup/codex-setup.md) for local installation and troubleshooting.
+Codex reads the marketplace in `.claude-plugin/marketplace.json`, then the plugin's skills through `plugins/agentic-sdlc/.codex-plugin/plugin.json`. Once installed, invoke a skill in chat with `$` (e.g., `$impl-strategy`) or pick it from `/skills`. See [knowledge-base/setup/codex-setup.md](knowledge-base/setup/codex-setup.md) for local installation and troubleshooting.
 
 </details>
 
@@ -273,14 +276,17 @@ completions and Next Edit Suggestions are never billed.
 ## Validating the install paths
 
 `npm test` checks the invariants every agent in the Quick Start depends on —
-manifests parse, each manifest's `skills` path resolves to all 20 skills, every
-`SKILL.md` has frontmatter whose `name` matches its directory, no manifest or
-root folder ships command or prompt files, every `skill:<name>` reference
+manifests parse, the marketplace lists every `plugins/` folder and no plugin
+manifest sits at the repo root, each plugin manifest's `skills` path resolves to all 20 skills,
+every `SKILL.md` has frontmatter whose `name` matches its directory, no
+manifest, root folder, or plugin folder ships command or prompt files, every `skill:<name>` reference
 resolves to a real skill, the README lists every skill and every skill a phase
-skill invokes, the version agrees everywhere, and no doc link is broken.
+skill invokes, the version agrees everywhere, no README link is broken, and
+`knowledge-base/` is a conformant OKF v0.2 bundle (strict, links included). It
+then runs the `node:test` suite for the `open-knowledge` validator.
 
 ```bash
-npm test           # node scripts/validate.mjs
+npm test           # node scripts/validate.mjs && node --test tests/*.test.mjs
 ```
 
 Run it after adding or editing a skill — it fails loudly if a reference, a
@@ -362,11 +368,16 @@ against, so keep it specific.
 
 ```
 agent-skills/
-├── skills/               # 20 skills — the heart of the repo (one dir per SKILL.md)
+├── .claude-plugin/
+│   └── marketplace.json  # Marketplace manifest — lists each plugin under plugins/
+├── plugins/
+│   └── agentic-sdlc/     # The agentic-sdlc plugin
+│       ├── .claude-plugin/plugin.json  # Claude Code plugin manifest
+│       ├── .codex-plugin/plugin.json   # Codex plugin manifest
+│       ├── plugin.json                 # Antigravity + VS Code Copilot (native format)
+│       └── skills/                     # 20 skills — the heart of the repo (one dir per SKILL.md)
 ├── scripts/              # validate.mjs (npm test)
-├── .claude-plugin/       # Claude Code marketplace + plugin manifests
-├── .codex-plugin/        # Codex plugin manifest
-├── plugin.json           # Root plugin manifest — Antigravity + VS Code Copilot (native format)
+├── tests/                # node:test suites + fixtures (npm test)
 ├── knowledge-base/       # OKF docs bundle (architecture + setup guides)
 │   ├── index.html        # Static visual catalog of the skills
 │   └── setup/            # Per-tool setup guides (linked from Quick Start)
@@ -378,7 +389,7 @@ agent-skills/
 
 Skills must be **specific** (actionable steps), **verifiable** (clear
 exit criteria), and **minimal** (only necessary guidance). Author the
-skill under `skills/<name>/SKILL.md` with `name`, `version`, and a
+skill under `plugins/agentic-sdlc/skills/<name>/SKILL.md` with `name`, `version`, and a
 trigger-rich `description` in the frontmatter — that's the whole
 contribution. See the [architecture overview](knowledge-base/architecture.md)
 for the design and [knowledge-base/](knowledge-base/index.md) for the full
@@ -394,7 +405,7 @@ The whole idea of this repository is to give an agent the experience of a
 complete, **end-to-end SDLC** — definition → build → verify → review → ship —
 and security hardening is a first-class part of that loop.
 
-The **[`security-and-hardening`](skills/security-and-hardening/SKILL.md)** skill
+The **[`security-and-hardening`](plugins/agentic-sdlc/skills/security-and-hardening/SKILL.md)** skill
 in the catalog above is **not authored here**. It is by
 **[Addy Osmani](https://github.com/addyosmani)** and vendored verbatim from
 [`addyosmani/agent-skills`](https://github.com/addyosmani/agent-skills) (MIT) —
@@ -404,7 +415,7 @@ truth.
 
 That same upstream collection also ships **`code-simplification`** and a
 browser-testing counterpart, **`browser-testing-with-devtools`** — the analogues
-of this repo's [`code-simplification`](skills/code-simplification/SKILL.md) and
-[`browser-testing`](skills/browser-testing/SKILL.md) skills — so those two are
+of this repo's [`code-simplification`](plugins/agentic-sdlc/skills/code-simplification/SKILL.md) and
+[`browser-testing`](plugins/agentic-sdlc/skills/browser-testing/SKILL.md) skills — so those two are
 expected to track the upstream versions as well. The remaining skills are
 original to this repo.

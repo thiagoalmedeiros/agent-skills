@@ -2,14 +2,14 @@
 type: Template
 title: SKILL.md Template
 description: Canonical copy-paste template for a SKILL.md file.
-resource: /../skills/
+resource: /../plugins/agentic-sdlc/skills/
 tags: [skills, template, authoring]
-timestamp: 2026-07-12T18:00:00Z
+generated: { by: human:thiagomedeiros, at: 2026-07-12T18:00:00Z }
 ---
 
 # SKILL.md Template
 
-Copy the block below into `skills/<skill-name>/SKILL.md` and fill it in. The
+Copy the block below into `plugins/agentic-sdlc/skills/<skill-name>/SKILL.md` and fill it in. The
 folder name must equal the `name:` field. The `description` is what an agent
 matches a request against — pack it with real trigger phrases and keep
 `USE FOR:` / `DO NOT USE FOR:` explicit. Keep the always-loaded body lean; move

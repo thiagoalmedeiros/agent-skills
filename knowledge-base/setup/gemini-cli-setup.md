@@ -3,7 +3,7 @@ type: Setup Guide
 title: Gemini CLI Setup
 description: Install the skills in Gemini CLI natively, or reference them from GEMINI.md context.
 tags: [setup, integration, gemini]
-timestamp: 2026-07-12T16:30:00Z
+generated: { by: human:thiagomedeiros, at: 2026-07-12T16:30:00Z }
 ---
 
 # Gemini CLI Setup
@@ -13,17 +13,17 @@ persistent context at them from `GEMINI.md`.
 
 ## Install from the repo
 
-`skills/` is the source directory in this repo, so install with `--path skills`:
+The skills live in `plugins/agentic-sdlc/skills/` in this repo, so install with `--path plugins/agentic-sdlc/skills`:
 
 ```bash
-gemini skills install https://github.com/thiagoalmedeiros/agent-skills.git --path skills
+gemini skills install https://github.com/thiagoalmedeiros/agent-skills.git --path plugins/agentic-sdlc/skills
 ```
 
 ## Install from a local clone
 
 ```bash
 git clone https://github.com/thiagoalmedeiros/agent-skills.git
-gemini skills install ./agent-skills/skills/
+gemini skills install ./agent-skills/plugins/agentic-sdlc/skills/
 ```
 
 ## Persistent context (alternative)
@@ -32,7 +32,7 @@ If you'd rather always load a few skills, reference them from `GEMINI.md`:
 
 ```markdown
 # Project context
-Follow the workflow in skills/impl-strategy/SKILL.md when planning changes.
+Follow the workflow in plugins/agentic-sdlc/skills/impl-strategy/SKILL.md when planning changes.
 ```
 
 ## Verify

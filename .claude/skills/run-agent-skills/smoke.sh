@@ -4,8 +4,9 @@
 # Steps:
 #   1. node scripts/validate.mjs   — repo invariants (manifests, frontmatter,
 #                                    skills-only surfaces, skill refs, doc links)
-#   2. claude plugin validate .    — manifest as the real consumer parses it
-#   3. claude --plugin-dir . plugin details agentic-sdlc
+#   2. claude plugin validate      — marketplace (.) and plugin (plugins/agentic-sdlc)
+#                                    manifests as the real consumer parses them
+#   3. claude --plugin-dir plugins/agentic-sdlc plugin details agentic-sdlc
 #                                  — LOCAL-tree inventory: every skill
 #                                    registers (not the installed copy)
 #   4. headless E2E               — real `claude -p` session loads a probe
@@ -21,6 +22,7 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$REPO"
+PLUGIN=plugins/agentic-sdlc
 
 PROBE="${PROBE_SKILL:-security-and-hardening}"
 BOLD=$'\033[1m'; GREEN=$'\033[32m'; RED=$'\033[31m'; RESET=$'\033[0m'
@@ -33,14 +35,15 @@ node scripts/validate.mjs
 
 command -v claude >/dev/null || die "claude CLI not found — steps 2-4 need it"
 
-step "2/4 claude plugin validate ."
+step "2/4 claude plugin validate (marketplace + $PLUGIN)"
 claude plugin validate .
+claude plugin validate "$PLUGIN"
 
-step "3/4 local-tree inventory (claude --plugin-dir . plugin details)"
-SKILLS=$(find skills -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')
-INV=$(claude --plugin-dir . plugin details agentic-sdlc)
+step "3/4 local-tree inventory (claude --plugin-dir $PLUGIN plugin details)"
+SKILLS=$(find "$PLUGIN/skills" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')
+INV=$(claude --plugin-dir "$PLUGIN" plugin details agentic-sdlc)
 echo "$INV" | grep -q "Skills ($SKILLS)" \
-  || die "expected Skills ($SKILLS) [one per skills/*/SKILL.md], got: $(echo "$INV" | grep -o 'Skills ([0-9]*)' || true)"
+  || die "expected Skills ($SKILLS) [one per $PLUGIN/skills/*/SKILL.md], got: $(echo "$INV" | grep -o 'Skills ([0-9]*)' || true)"
 echo "$INV" | grep 'Skills (' | grep -qE "(  |, )$PROBE(,|$)" || die "probe skill '$PROBE' missing from inventory"
 ok "Skills ($SKILLS) = $SKILLS skills; '$PROBE' present"
 
@@ -49,7 +52,7 @@ if [ "${SKIP_E2E:-0}" = "1" ]; then
 else
   step "4/4 headless E2E: load agentic-sdlc:$PROBE in a live session (~1 min)"
   WORK=$(mktemp -d)  # run outside the repo so its project context doesn't load
-  OUT=$(cd "$WORK" && claude --plugin-dir "$REPO" --model haiku --allowedTools Skill -p \
+  OUT=$(cd "$WORK" && claude --plugin-dir "$REPO/$PLUGIN" --model haiku --allowedTools Skill -p \
     "Invoke the Skill tool with skill 'agentic-sdlc:$PROBE'. After it loads, output ONLY the first markdown heading line of the loaded skill content, nothing else.")
   rm -rf "$WORK"
   echo "$OUT"

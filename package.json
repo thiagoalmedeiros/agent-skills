@@ -1,10 +1,10 @@
 {
   "name": "agent-skills",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Production-grade SDLC skills for AI coding agents.",
   "scripts": {
     "validate": "node scripts/validate.mjs",
-    "test": "node scripts/validate.mjs"
+    "test": "node scripts/validate.mjs && node --test tests/*.test.mjs"
   },
   "keywords": [
     "sdlc",

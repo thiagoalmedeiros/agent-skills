@@ -3,7 +3,7 @@ type: Setup Guide
 title: Windsurf Setup
 description: Use the skills in Windsurf via workspace rules and Cascade memories.
 tags: [setup, integration, windsurf]
-timestamp: 2026-07-12T16:30:00Z
+generated: { by: human:thiagomedeiros, at: 2026-07-12T16:30:00Z }
 ---
 
 # Windsurf Setup
@@ -22,11 +22,11 @@ your Windsurf **rules** configuration (Cascade memories / workspace rules).
    ```
 
 2. For each workflow you want always available, add a **workspace rule** that
-   references or inlines the relevant `skills/<name>/SKILL.md`. Keep rules
+   references or inlines the relevant `plugins/agentic-sdlc/skills/<name>/SKILL.md`. Keep rules
    focused — add the one or two skills you use most rather than all 19, to
    avoid context bloat.
 
-3. For everything else, keep the cloned `skills/` in the workspace and ask
+3. For everything else, keep the cloned `plugins/agentic-sdlc/skills/` in the workspace and ask
    Cascade to follow a specific `SKILL.md` by path when you need it.
 
 ## Tips

@@ -3,20 +3,23 @@
 //
 // Checks the repo invariants each agent depends on:
 //   1. JSON manifests parse (Claude marketplace/plugin, Codex, Antigravity, npm)
-//   2. Each manifest's `skills` path resolves to the full set of SKILL.md files
+//   2. The marketplace and plugins/ agree, no plugin manifest sits at the repo root,
+//      and each plugin manifest's `skills` path resolves to the full set of SKILL.md files
 //   3. Every skill has valid frontmatter, `name` matches its directory, and `description` fits the spec limit
-//   4. No manifest or root folder ships command or prompt files — skills only
+//   4. No manifest, root folder, or plugin folder ships command or prompt files — skills only
 //   5. Skill descriptions are YAML-safe
 //   6. Every `skill:<name>` reference in a skill resolves to a real skill
 //   7. README catalog matches the skill folders, and phase rows list invoked skills
 //   8. Version agrees everywhere
-//   9. Relative links in README.md and knowledge-base/ point at real files
+//   9. Relative links in README.md point at real files
+//  10. knowledge-base/ is an OKF v0.2 bundle (strict) — including its links
 //
 // Usage: node scripts/validate.mjs   (or: npm test)
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateBundle } from "../plugins/agentic-sdlc/skills/open-knowledge/scripts/validate.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const R = (...p) => join(root, ...p);
@@ -28,15 +31,18 @@ const fail = (m) => {
 };
 const head = (m) => console.log(`\n\x1b[1m${m}\x1b[0m`);
 
-const skillDirs = readdirSync(R("skills")).filter((d) =>
-  existsSync(R("skills", d, "SKILL.md")),
+const PLUGIN = "plugins/agentic-sdlc";
+const SKILLS = `${PLUGIN}/skills`;
+const skillDirs = readdirSync(R(SKILLS)).filter((d) =>
+  existsSync(R(SKILLS, d, "SKILL.md")),
 );
 const SKILL_COUNT = skillDirs.length;
 const pluginManifests = [
-  ".claude-plugin/plugin.json",
-  ".codex-plugin/plugin.json",
-  "plugin.json", // root manifest — Antigravity + VS Code Copilot native plugin format
+  `${PLUGIN}/.claude-plugin/plugin.json`,
+  `${PLUGIN}/.codex-plugin/plugin.json`,
+  `${PLUGIN}/plugin.json`, // Antigravity + VS Code Copilot native plugin format
 ];
+const ROOT_PLUGIN_MANIFESTS = ["plugin.json", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json", ".plugin/plugin.json"];
 const PROJECT_PROVIDED_SKILLS = new Set(["definition-of-done"]);
 const PHASE_SKILLS = ["define", "build", "verify", "review", "ship"];
 const MAX_DESCRIPTION_CHARS = 1024;
@@ -75,14 +81,30 @@ for (const m of manifests) {
   }
 }
 
-head(`2. Manifest 'skills' paths resolve to ${SKILL_COUNT} skills`);
+head(`2. Marketplace and plugins/ agree, and manifest 'skills' paths resolve to ${SKILL_COUNT} skills`);
+const localSources = (JSON.parse(readFileSync(R(".claude-plugin/marketplace.json"), "utf8")).plugins ?? [])
+  .map((p) => p.source)
+  .filter((source) => typeof source === "string");
+const pluginFolders = readdirSync(R("plugins"), { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => `./plugins/${e.name}`);
+const unlisted = pluginFolders.filter((folder) => !localSources.includes(folder));
+const unbacked = localSources.filter((source) => !existsSync(R(source, ".claude-plugin", "plugin.json")));
+unlisted.forEach((folder) => fail(`${folder.slice(2)}/ has no entry in .claude-plugin/marketplace.json`));
+unbacked.forEach((source) => fail(`.claude-plugin/marketplace.json → "${source}" has no .claude-plugin/plugin.json`));
+if (!unlisted.length && !unbacked.length)
+  pass(`.claude-plugin/marketplace.json lists every plugins/ folder (${pluginFolders.length}), each with a plugin manifest`);
+const strayRootManifests = ROOT_PLUGIN_MANIFESTS.filter((m) => existsSync(R(m)));
+strayRootManifests.length
+  ? fail(`plugin manifest at the repo root: ${strayRootManifests.join(", ")} — tools that treat the root as the plugin would load one with no skills; move it into plugins/<name>/`)
+  : pass(`no plugin manifest at the repo root`);
 for (const m of pluginManifests) {
   const s = JSON.parse(readFileSync(R(m), "utf8")).skills;
   if (!s) {
     fail(`${m}: no "skills" field`);
     continue;
   }
-  const dir = R(s);
+  const dir = R(PLUGIN, s);
   const n = existsSync(dir)
     ? readdirSync(dir).filter((d) => existsSync(join(dir, d, "SKILL.md"))).length
     : 0;
@@ -94,7 +116,7 @@ for (const m of pluginManifests) {
 head(`3. Skill frontmatter (${SKILL_COUNT} skills)`);
 let good = 0;
 for (const d of skillDirs.sort()) {
-  const t = readFileSync(R("skills", d, "SKILL.md"), "utf8");
+  const t = readFileSync(R(SKILLS, d, "SKILL.md"), "utf8");
   const fm = t.match(/^---\n([\s\S]*?)\n---\n/);
   if (!fm) {
     fail(`${d}: missing YAML frontmatter`);
@@ -111,10 +133,10 @@ for (const d of skillDirs.sort()) {
 if (good === SKILL_COUNT) pass(`${good}/${SKILL_COUNT} valid, name matches directory, description ≤ ${MAX_DESCRIPTION_CHARS} chars`);
 
 head(`4. Skills only — no command or prompt surfaces`);
-const retiredFolders = ["commands", "prompts"].filter((f) => existsSync(R(f)));
+const retiredFolders = ["commands", "prompts"].flatMap((f) => [f, `${PLUGIN}/${f}`]).filter((f) => existsSync(R(f)));
 retiredFolders.length
-  ? fail(`root ${retiredFolders.join(", ")} folder exists — phases ship as skills/<name>/SKILL.md`)
-  : pass(`no root commands or prompts folder`);
+  ? fail(`${retiredFolders.join(", ")} folder exists — phases ship as ${SKILLS}/<name>/SKILL.md`)
+  : pass(`no commands or prompts folder at the root or in ${PLUGIN}`);
 for (const m of pluginManifests) {
   const declared = ["commands", "prompts"].filter((k) => k in JSON.parse(readFileSync(R(m), "utf8")));
   declared.length
@@ -124,25 +146,25 @@ for (const m of pluginManifests) {
 
 head(`5. YAML frontmatter parses (unquoted ": " breaks GitHub's renderer)`);
 const badYaml = skillDirs.filter((d) => {
-  const fm = readFileSync(R("skills", d, "SKILL.md"), "utf8").match(/^---\n([\s\S]*?)\n---\n/);
+  const fm = readFileSync(R(SKILLS, d, "SKILL.md"), "utf8").match(/^---\n([\s\S]*?)\n---\n/);
   return (fm?.[1].match(/^description:\s*(.*)$/m) || []).slice(1).some(yamlBroken);
 });
 badYaml.length
-  ? badYaml.forEach((d) => fail(`skills/${d}/SKILL.md: description holds ": " unquoted — wrap the value in double quotes`))
+  ? badYaml.forEach((d) => fail(`${SKILLS}/${d}/SKILL.md: description holds ": " unquoted — wrap the value in double quotes`))
   : pass(`${SKILL_COUNT} frontmatter descriptions are YAML-safe`);
 
 head(`6. skill: references resolve`);
 const skillDocs = skillDirs.flatMap((d) => {
-  const refsDir = R("skills", d, "references");
+  const refsDir = R(SKILLS, d, "references");
   const references = existsSync(refsDir)
-    ? readdirSync(refsDir).filter((f) => f.endsWith(".md")).map((f) => `skills/${d}/references/${f}`)
+    ? readdirSync(refsDir).filter((f) => f.endsWith(".md")).map((f) => `${SKILLS}/${d}/references/${f}`)
     : [];
-  return [`skills/${d}/SKILL.md`, ...references];
+  return [`${SKILLS}/${d}/SKILL.md`, ...references];
 });
 const unresolved = skillDocs.flatMap((doc) =>
   [...readFileSync(R(doc), "utf8").matchAll(/skill:([a-z0-9-]+)/g)]
     .map((m) => m[1])
-    .filter((ref) => !PROJECT_PROVIDED_SKILLS.has(ref) && !existsSync(R("skills", ref, "SKILL.md")))
+    .filter((ref) => !PROJECT_PROVIDED_SKILLS.has(ref) && !existsSync(R(SKILLS, ref, "SKILL.md")))
     .map((ref) => `${doc} → skill:${ref}`),
 );
 unresolved.length
@@ -159,7 +181,7 @@ undocumented.length
   : pass(`all ${SKILL_COUNT} skills appear in the Skills Catalog`);
 const listedWithoutFolder = [...listed].filter((name) => !skillDirs.includes(name));
 listedWithoutFolder.length
-  ? fail(`README catalog lists skills with no skills/<name>/SKILL.md: ${listedWithoutFolder.join(", ")}`)
+  ? fail(`README catalog lists skills with no ${SKILLS}/<name>/SKILL.md: ${listedWithoutFolder.join(", ")}`)
   : pass(`every Skills Catalog row names a real skill`);
 // A skill a phase invokes must be visible in that phase's README row, or readers
 // plan around a phase that silently does more than documented.
@@ -171,10 +193,10 @@ const phaseGaps = [
   ...[...phaseRows.keys()].filter((row) => !PHASE_SKILLS.includes(row)).map((row) => `unexpected row \`${row}\` — not a phase skill`),
   ...PHASE_SKILLS.flatMap((phase) => {
     if (!phaseRows.has(phase)) return [`no \`${phase}\` row`];
-    const src = R("skills", phase, "SKILL.md");
-    if (!existsSync(src)) return [`\`${phase}\` has no skills/${phase}/SKILL.md`];
+    const src = R(SKILLS, phase, "SKILL.md");
+    if (!existsSync(src)) return [`\`${phase}\` has no ${SKILLS}/${phase}/SKILL.md`];
     const steps = sectionBetween(readFileSync(src, "utf8"), "## The Process", "## Common Rationalizations");
-    if (steps === null) return [`skills/${phase}/SKILL.md lacks "## The Process" followed by "## Common Rationalizations"`];
+    if (steps === null) return [`${SKILLS}/${phase}/SKILL.md lacks "## The Process" followed by "## Common Rationalizations"`];
     const invoked = new Set([...steps.matchAll(/skill:([a-z0-9-]+)/g)].map((m) => m[1]));
     return [...invoked]
       .filter((ref) => !PHASE_SKILLS.includes(ref) && !phaseRows.get(phase).includes(`\`${ref}\``))
@@ -189,9 +211,7 @@ head(`8. Version agrees everywhere`);
 const VERSION = JSON.parse(readFileSync(R("package.json"), "utf8")).version;
 const versions = {
   "package.json": VERSION,
-  "plugin.json": JSON.parse(readFileSync(R("plugin.json"), "utf8")).version,
-  ".claude-plugin/plugin.json": JSON.parse(readFileSync(R(".claude-plugin/plugin.json"), "utf8")).version,
-  ".codex-plugin/plugin.json": JSON.parse(readFileSync(R(".codex-plugin/plugin.json"), "utf8")).version,
+  ...Object.fromEntries(pluginManifests.map((m) => [m, JSON.parse(readFileSync(R(m), "utf8")).version])),
   ".claude-plugin/marketplace.json": JSON.parse(readFileSync(R(".claude-plugin/marketplace.json"), "utf8")).metadata?.version,
   // Hand-maintained blob and prose — nothing else regenerates these, so they drift silently.
   "knowledge-base/index.html": (readFileSync(R("knowledge-base/index.html"), "utf8").match(/const DATA = (\{.*\});$/m) || []).slice(1).map((d) => JSON.parse(d).version)[0],
@@ -200,19 +220,17 @@ const versions = {
 for (const [file, v] of Object.entries(versions))
   v === VERSION ? pass(`${file} → ${v}`) : fail(`${file} → ${v ?? "not found"} (expected ${VERSION})`);
 
-head(`9. Relative links in docs resolve`);
-const docs = ["README.md", ...readdirSync(R("knowledge-base")).filter((f) => f.endsWith(".md")).map((f) => `knowledge-base/${f}`)];
-for (const doc of docs) {
-  const t = readFileSync(R(doc), "utf8");
-  const base = dirname(R(doc));
-  for (const m of t.matchAll(/\]\((?!https?:|mailto:|#)([^)]+)\)/g)) {
-    const p = m[1].split("#")[0];
-    if (!p) continue;
-    const target = join(base, p);
-    if (!existsSync(target)) fail(`${doc} → broken link: ${p}`);
-  }
+head(`9. Relative links in README.md resolve`);
+for (const m of readme.matchAll(/\]\((?!https?:|mailto:|#)([^)]+)\)/g)) {
+  const p = m[1].split("#")[0];
+  if (p && !existsSync(R(p))) fail(`README.md → broken link: ${p}`);
 }
 if (!fails.some((f) => f.includes("broken link"))) pass("no broken relative links");
+
+head(`10. knowledge-base/ is OKF v0.2 conformant (strict)`);
+const okf = validateBundle(R("knowledge-base"), { strict: true });
+for (const f of okf.findings) fail(`knowledge-base/${f.file} → ${f.code} ${f.message}`);
+if (!okf.findings.length) pass(`${okf.summary.concepts} concepts across ${okf.summary.files} files conform, house rules included`);
 
 console.log(
   fails.length
