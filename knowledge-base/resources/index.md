@@ -19,3 +19,4 @@ to the paper on arXiv.
 - [SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks](https://arxiv.org/abs/2603.24755) — Structural erosion and verbosity as agents repeatedly extend their own code.
 - [Less Context, Better Agents: Efficient Context Engineering for Long-Horizon Tool-Using LLM Agents](https://arxiv.org/abs/2606.10209) — Tool-call pruning plus summarization beating full-history retention.
 - [Refused in Chat, Written in Code: Workflow-Level Jailbreak Construction in IDE Coding Agents](https://arxiv.org/abs/2607.03968) — Harmful objectives assembled across ordinary IDE workflow stages evading chat-level refusals.
+- [The Working Set of a Coding Agent: Coherence Debt in Repository-Scale Tasks](https://arxiv.org/abs/2608.16630) — Facts missing from both context and memory cause fabricated work; stale convention files cost more than none.
