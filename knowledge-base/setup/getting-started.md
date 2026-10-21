@@ -19,7 +19,7 @@ The open [skills CLI](https://github.com/vercel-labs/skills) installs into 70+
 agents with one command:
 
 ```bash
-npx skills add thiagoalmedeiros/agent-skills            # install all 20 skills
+npx skills add thiagoalmedeiros/agent-skills            # install all 21 skills
 npx skills add thiagoalmedeiros/agent-skills --list     # browse before installing
 npx skills add thiagoalmedeiros/agent-skills --skill impl-strategy
 ```

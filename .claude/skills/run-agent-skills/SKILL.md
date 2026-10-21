@@ -52,7 +52,7 @@ at user scope as `agentic-sdlc@agentic-skills` (check: `claude plugin list`).
 npm test   # node scripts/validate.mjs (10 groups) && node --test tests/*.test.mjs — all must pass
 ```
 
-Expected: `✓ All checks passed — 20 skills load correctly for every documented
+Expected: `✓ All checks passed — 21 skills load correctly for every documented
 agent.` (counts grow as skills are added; the five phase skills count among them),
 then the `node:test` summary with `# fail 0`.
 

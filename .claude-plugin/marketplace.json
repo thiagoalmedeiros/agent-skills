@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Production-grade SDLC skills for AI coding agents.",
-    "version": "3.1.0"
+    "version": "3.2.0"
   },
   "plugins": [
     {
       "name": "agentic-sdlc",
       "source": "./plugins/agentic-sdlc",
-      "description": "20 SDLC skills spanning the definition → build → verify → review → ship path, plus security hardening and a shelf of reference and thinking-aid skills.",
+      "description": "21 SDLC skills spanning the definition → build → verify → review → ship path, plus security hardening and a shelf of reference and thinking-aid skills.",
       "category": "workflow"
     }
   ]

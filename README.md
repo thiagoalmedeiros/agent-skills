@@ -2,9 +2,9 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
-**Version 3.1.0** · 20 skills · MIT
+**Version 3.2.0** · 21 skills · MIT
 
-20 structured skills that encode a full software-delivery workflow — the path
+21 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
 shelf of always-available reference and thinking-aid skills — into steps AI
 coding assistants follow consistently. Works with Claude Code, VS Code Copilot, and
@@ -25,7 +25,7 @@ discover them.
 **Fastest path — any agent, one command.** The open [skills CLI](https://github.com/vercel-labs/skills) installs into 70+ agents (Claude Code, Cursor, Codex, Copilot, Cline, and more):
 
 ```bash
-npx skills add thiagoalmedeiros/agent-skills            # install all 20 skills
+npx skills add thiagoalmedeiros/agent-skills            # install all 21 skills
 npx skills add thiagoalmedeiros/agent-skills --list     # browse before installing
 ```
 
@@ -212,7 +212,10 @@ the skills it invokes.
 
 Each phase skill stops at its own boundary and names the next: `define` stops at
 the plan, `build` stops for `verify` after one batch, `verify` closes a batch only
-on an APPROVED verdict, and an approved `review` moves on to `ship`.
+on an APPROVED verdict, and an approved `review` moves on to `ship`. To run every
+remaining batch without stopping, **`go-wild`** loops `build` → `verify` over the
+whole plan in order, running batches the plan declares independent in parallel
+worktrees, and stops to report a blocked batch.
 
 ### Invoking a phase skill
 
@@ -277,7 +280,7 @@ completions and Next Edit Suggestions are never billed.
 
 `npm test` checks the invariants every agent in the Quick Start depends on —
 manifests parse, the marketplace lists every `plugins/` folder and no plugin
-manifest sits at the repo root, each plugin manifest's `skills` path resolves to all 20 skills,
+manifest sits at the repo root, each plugin manifest's `skills` path resolves to all 21 skills,
 every `SKILL.md` has frontmatter whose `name` matches its directory, no
 manifest, root folder, or plugin folder ships command or prompt files, every `skill:<name>` reference
 resolves to a real skill, the README lists every skill and every skill a phase
@@ -292,14 +295,14 @@ npm test           # node scripts/validate.mjs && node --test tests/*.test.mjs
 Run it after adding or editing a skill — it fails loudly if a reference, a
 README row, or a version drifts.
 
-## Skills Catalog (20)
+## Skills Catalog (21)
 
 Grouped by the implementation path — **definition → build → verify → review →
 ship** — plus the shelf. Each phase opens with its **phase skill**, the entry
 point that composes the rest of that phase. Two skills are listed twice:
 `grill-me` and `open-knowledge` live on the shelf but are also invoked directly
 by a phase skill (`define` and `ship` respectively), so they appear under that
-phase as well. The count of 20 is unique skills, not table rows.
+phase as well. The count of 21 is unique skills, not table rows.
 
 ### Definition
 | Skill | Purpose |
@@ -313,6 +316,7 @@ phase as well. The count of 20 is unique skills, not table rows.
 | Skill | Purpose |
 | --- | --- |
 | `build` | Phase skill — implement one plan batch against the conventions the project itself defines; there is no specialist implementer skill |
+| `go-wild` | Run the whole plan unattended — `build` and `verify` every batch in plan order (in parallel only where the plan declares batches independent), stopping only when the plan is complete or a batch is blocked |
 
 ### Verify
 | Skill | Purpose |
@@ -375,7 +379,7 @@ agent-skills/
 │       ├── .claude-plugin/plugin.json  # Claude Code plugin manifest
 │       ├── .codex-plugin/plugin.json   # Codex plugin manifest
 │       ├── plugin.json                 # Antigravity + VS Code Copilot (native format)
-│       └── skills/                     # 20 skills — the heart of the repo (one dir per SKILL.md)
+│       └── skills/                     # 21 skills — the heart of the repo (one dir per SKILL.md)
 ├── scripts/              # validate.mjs (npm test)
 ├── tests/                # node:test suites + fixtures (npm test)
 ├── knowledge-base/       # OKF docs bundle (architecture + setup guides)
