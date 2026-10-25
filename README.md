@@ -2,7 +2,7 @@
 
 **Production-grade SDLC skills for AI coding agents.**
 
-**Version 3.2.0** · 21 skills · MIT
+**Version 3.3.0** · 21 skills · MIT
 
 21 structured skills that encode a full software-delivery workflow — the path
 **definition → build → verify → review → ship**, plus security hardening and a
@@ -210,12 +210,24 @@ the skills it invokes.
 | `review` | Review | `code-reviewer` → `security-and-hardening` → `code-simplification` (+ `objective-advisor`) |
 | `ship` | Ship | `docs-sync` → `open-knowledge` → `merge-and-validate` |
 
-Each phase skill stops at its own boundary and names the next: `define` stops at
-the plan, `build` stops for `verify` after one batch, `verify` closes a batch only
-on an APPROVED verdict, and an approved `review` moves on to `ship`. To run every
-remaining batch without stopping, **`go-wild`** loops `build` → `verify` over the
-whole plan in order, running batches the plan declares independent in parallel
-worktrees, and stops to report a blocked batch.
+Each phase skill stops at its own boundary and names the next:
+
+```
+define ─▶ plan.md ─▶ for each batch: build ─▶ verify ─▶ … final batch ─▶ review ─▶ ship
+                      └──────── go-wild runs this loop unattended ────────┘
+```
+
+- `define` stops at the plan. `impl-strategy` writes it: every batch carries
+  `Build steps`, a `Verify` line, and a `Gates` line naming gates defined once
+  in the plan (Necessity → DoD → Thomas). The final batch is the global gate.
+- `build` runs the steps it is handed — a batch or any other spec — and stops.
+- `verify` runs the checks and each named gate in order, and closes the batch
+  only when all pass. Closing the final batch completes the plan.
+- An approved `review` moves on to `ship`.
+
+**`go-wild`** loops `build` → `verify` over every remaining batch in order,
+runs batches joined by `Parallel with` in parallel worktrees, and stops to
+report a blocked batch.
 
 ### Invoking a phase skill
 
@@ -315,13 +327,13 @@ phase as well. The count of 21 is unique skills, not table rows.
 ### Build
 | Skill | Purpose |
 | --- | --- |
-| `build` | Phase skill — implement one plan batch against the conventions the project itself defines; there is no specialist implementer skill |
-| `go-wild` | Run the whole plan unattended — `build` and `verify` every batch in plan order (in parallel only where the plan declares batches independent), stopping only when the plan is complete or a batch is blocked |
+| `build` | Phase skill — build what any spec asks for (a prompt, a ticket, a plan slice) in observed steps, against the conventions the project itself defines; there is no specialist implementer skill |
+| `go-wild` | Run the whole plan unattended — `build` and `verify` every batch in plan order (in parallel only where a batch carries `Parallel with`), stopping only when the plan is complete or a batch is blocked |
 
 ### Verify
 | Skill | Purpose |
 | --- | --- |
-| `verify` | Phase skill — run the batch through `thomas` and close it only on an APPROVED verdict |
+| `verify` | Phase skill — run the batch's checks and each gate it names in order (`thomas` last), closing it only when all pass |
 | `thomas` | Hands-on validation — only witnessed passing output counts |
 
 ### Review

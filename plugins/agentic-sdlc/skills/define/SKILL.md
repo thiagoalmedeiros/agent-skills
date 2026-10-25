@@ -1,6 +1,6 @@
 ---
 name: define
-version: 1.0.0
+version: 1.0.1
 description: >
   Define the work — turn a task description or Jira ticket into a
   structured implementation plan at plans/<topic>/plan.md before any code
@@ -64,8 +64,7 @@ List) and initialize its `lessons.md`.
 
 ### Step 5: STOP — hand off without implementing
 
-Stop at the plan, even though the planning skill's own hand-off step says
-to begin execution. Implementation is the next phase, `skill:build`.
+Stop at the plan. Implementation is the next phase, `skill:build`.
 
 ## Common Rationalizations
 
@@ -73,7 +72,6 @@ to begin execution. Implementation is the next phase, `skill:build`.
 | --- | --- |
 | "The request is clear enough — skip clarifying." | An unconfirmed sentence is a guess, and the plan inherits every wrong assumption in it. |
 | "Grilling is overkill; the approach is obvious." | Obvious approaches are the ones nobody attacked. Skip only for trivial, mechanical tasks. |
-| "The planning skill says to start executing, so start." | This phase ends at the plan. Execution belongs to the build phase, one batch at a time. |
 | "I'll write the first batch while the context is fresh." | Code written before the plan exists skips the batches and validation the plan defines. |
 
 ## Red Flags

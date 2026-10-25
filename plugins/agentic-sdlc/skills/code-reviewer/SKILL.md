@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-version: 1.1.0
+version: 1.2.0
 description: >
   Multi-axis code review, language- and framework-agnostic — correctness,
   readability, architecture/SOLID, security, and performance, layered
@@ -48,8 +48,10 @@ uncommitted changes) using the git commands in
 ### Step 2: CONTEXT — understand intent, tests first
 
 Establish what the change is trying to accomplish and its expected
-behavior. Review the **tests first** — do they exist, test behavior not
-implementation, cover edge cases, and catch regressions?
+behavior. Review the **tests first** — does each one prove a requirement
+the change implements, test behavior not implementation, cover edge cases,
+and catch regressions? A test that exists only to raise coverage is a
+finding.
 
 ### Step 3: REVIEW — walk the five axes
 
@@ -86,6 +88,7 @@ what matters most, using the output format and structural remedies in
 
 | Rationalization | Reality |
 | --- | --- |
+| "More tests are always better." | A test that proves no requirement is slop — it costs maintenance and adds no proof. |
 | "It works, that's good enough." | Unreadable, insecure, or architecturally wrong code compounds debt even when it runs. |
 | "AI-generated code is probably fine." | It needs more scrutiny, not less — confident and plausible even when wrong. |
 | "The tests pass, so it's good." | Tests don't catch architecture, security, or readability problems. |

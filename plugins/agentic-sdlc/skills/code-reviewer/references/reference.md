@@ -83,6 +83,7 @@ Does the code do what it claims to do?
 
 | Check               | Criteria                                                                            |
 | ------------------- | ----------------------------------------------------------------------------------- |
+| **Necessity**       | Every test must prove a requirement the change implements. Flag tests written for coverage, for an implementation detail, or "while we're here" — coverage is the consequence of requirement-driven tests, not a target. |
 | **Empty tests**     | Flag tests with no meaningful assertion.                                            |
 | **Duplicate tests** | Flag test cases that exercise the exact same path with trivially different data.    |
 | **String reuse**    | Repeated literal strings must be extracted into constants or fixtures.              |

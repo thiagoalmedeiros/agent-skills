@@ -1,23 +1,38 @@
 # Implementation Plan — Output Structure & Execution Rules
 
-> The detailed output structure, batch shapes, and execution rules for
-> the `impl-strategy` skill. `SKILL.md` is the lean process that points
-> here. Use [plan.template.md](plan.template.md) as the fill-in template
-> for `plan.md`.
+> The single source of truth for the shape of `plan.md` and the rules every
+> phase follows while executing it. `SKILL.md` is the lean process that points
+> here; [plan.template.md](plan.template.md) is the fill-in copy of this shape;
+> [build-strategies.md](build-strategies.md) defines what goes in each batch's
+> `Build steps` line and any gate a strategy adds.
+
+## How a plan flows
+
+```
+impl-strategy writes plan.md
+  └─ per batch, in order:
+       build   — runs the batch's Build steps, marks its items 🔄
+       verify  — runs Verify, then each gate in the batch's Gates line,
+                 marking rows ✅ as each passes; Thomas last
+  └─ the final batch is the global gate → plan complete → skill:review
+```
+
+`go-wild` runs that loop unattended; a user can run it one batch at a time. No
+phase reads anything except `plan.md`, so everything below is written into it.
 
 ## Execution Config (captured during Discovery)
 
-Record these in a `## Execution Config` section of `plan.md`:
+Record these in a `### Execution Config` table at the top of Section 2:
 
 - **Per-batch verify command(s)** and **global verify command(s)** — discovered by
   searching the codebase (`Taskfile.yml`, `package.json`, `README.md`, CI configs)
   and confirmed with the user. They become each batch's `**Verify:**` line.
-- **`thomas: enabled` | `thomas: disabled`** — whether `skill:thomas` is spawned as a
-  subagent to witness each batch's Verify step. If disabled, omit the `Thomas` row and
-  `**Thomas Gate:**` lines from all batches.
+- **Build strategy** — the strategy from [build-strategies.md](build-strategies.md)
+  every batch's `**Build steps:**` line is expanded from. Default: `red-implement-green`.
+- **Thomas** — `enabled` or `disabled`. When disabled, omit the `Thomas` row and the
+  Thomas gate, and the verify phase executes the `Verify` line itself.
 - **Definition of Done** — a named DoD skill (`skill:<dod-skill-name>`) or inline
-  criteria, recorded under `## Definition of Done`. If neither is provided, omit that
-  section and all `DoD Gate` lines.
+  criteria. If neither is provided, record `none` and omit the DoD gate everywhere.
 
 ## Output Structure
 
@@ -30,56 +45,82 @@ A numbered list of the actual changes or workstreams being delivered.
 - Each item has a bold title and a short explanation.
 - Describe the outcome, not just the mechanism.
 - Scope to in-scope work only.
+- **List the requirements under `### Requirements` as `R1…Rn`** — each a necessity the
+  user, ticket, or confirmed task states. Under `red-implement-green` every test cites one,
+  and nothing is tested or built that no requirement asks for.
 - **Always include a standing item for continuous lessons capture:** `Lessons are automatically logged to \`lessons.md\` after every user correction and every agent mistake discovered during execution — without being asked.`
 
 ### Section 2 — How We Are Doing It / What Is Out of Scope
 
-Must contain both the execution method and the explicit non-goals.
+In this order:
 
-- The implementation checklist by item type (TypeScript, template, styling, backend, config, runtime) where relevant.
-- The validation strategy the executor runs after each batch.
-- An explicit out-of-scope list, calling out shared infrastructure to handle separately and excluding speculative cleanup.
-- Prefer concrete file paths, modules, interfaces, routes, or commands over abstract guidance.
+1. `### Execution Config` — the table above.
+2. `### Execution rules` — copied verbatim from [Execution rules](#execution-rules) below.
+3. `### Gates` — one definition per gate the plan uses, copied from
+   [Gate definitions](#gate-definitions) below. Defined once here; batches only name them.
+4. `### Implementation checklist` — by file, with concrete changes (TypeScript, template,
+   styling, backend, config, runtime where relevant). Under `red-implement-green`, list
+   each test file before the production files it covers.
+5. `### Out of scope` — non-goals, shared infrastructure to handle separately, no
+   speculative cleanup.
+
+Prefer concrete file paths, modules, interfaces, routes, or commands over abstract guidance.
 
 ### Section 3 — Tracking List
 
-Track the work in batches of at most 4 items. Each batch has a short title, a markdown
-table, and a `**Verify:**` line based on commands discovered in the codebase.
-
-Table shape (without DoD):
+Batches of at most 4 items. Every batch has exactly this shape:
 
 ```markdown
-### Batch N - <description>
+### Batch N — <description>
 
-| #      | Item              | File/Area                     | Status |
-| ------ | ----------------- | ----------------------------- | ------ |
-| 1      | `Work item`       | `src/app/path/or/feature`     | ⬜     |
-| 2      | `Work item`       | `src/app/path/or/feature`     | ⬜     |
-| Thomas | Verify this batch | `skill:thomas` (if available) | ⛾      |
+| #         | Item             | File/Area                 | Status |
+| --------- | ---------------- | ------------------------- | ------ |
+| 1         | `Work item`      | `src/app/path/or/feature` | ⬜     |
+| 2         | `Work item`      | `src/app/path/or/feature` | ⬜     |
+| Necessity | Necessity gate   | Gates                     | ⬜     |
+| DoD       | DoD gate         | Gates                     | ⬜     |
+| Thomas    | Thomas gate      | Gates                     | ⬜     |
 
-**Verify:** `<command>` -> `<command>` -> check <routes/tests/scenarios>
-**Thomas Gate (if available):** After the `Verify` command passes, dispatch `skill:thomas` as a subagent to execute every check in this batch's `Verify` line itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
+**Build steps (<strategy>):** <expanded from build-strategies.md>
+**Verify:** `<command>` → `<command>` → <what passing looks like>
+**Gates:** Necessity → DoD → Thomas
 ```
 
-Table shape (**when a DoD was provided**):
+- One gate row per gate the batch names; the `Gates` line lists them in run order.
+  Run order is always **Necessity → DoD → Thomas**, dropping any the plan or strategy
+  does not use. Thomas, when enabled, is always last.
+- `**Parallel with:** Batch M` — optional. Only this line makes two batches independent;
+  without it every batch runs after the one before it closes.
+- **The final batch is the global gate.** Its `Verify` line runs the global verify
+  command, and it names `Thomas (final)` instead of `Thomas`. The plan is complete only
+  when this batch closes.
+
+Status values: `⬜` pending · `🔄` built, awaiting verify · `✅` passed. Default new items
+to `⬜` unless preserving status from an existing document.
+
+## Execution rules
+
+Copy these into the plan's `### Execution rules` verbatim.
 
 ```markdown
-### Batch N - <description>
-
-| #      | Item              | File/Area                     | Status |
-| ------ | ----------------- | ----------------------------- | ------ |
-| 1      | `Work item`       | `src/app/path/or/feature`     | ⬜     |
-| 2      | `Work item`       | `src/app/path/or/feature`     | ⬜     |
-| DoD    | Validate batch    | DoD / validation script       | ⬜     |
-| Thomas | Verify this batch | `skill:thomas` (if available) | ⛾      |
-
-**Verify:** `<command>` -> `<command>` -> check <routes/tests/scenarios>
-**DoD Gate:** Invoke `skill:<dod-skill-name>` (or run the inline DoD criteria) against this batch's output using a validation subagent. This step is **mandatory and cannot be skipped**. Mark the DoD row ✅ only after the subagent confirms all criteria pass. If any criterion fails, fix the failure, log the correction in `lessons.md`, and re-run the gate before proceeding.
-**Thomas Gate (if available):** After the DoD Gate passes, dispatch `skill:thomas` as a subagent to execute every check itself and confirm witnessed passing output. Thomas will also verify that all tracking-list rows for this batch — including the DoD row — are marked ✅ in `plan.md`. Mark the Thomas row ✅ only after Thomas issues an **APPROVED** verdict. If Thomas returns **NOT APPROVED**, the batch is not complete.
+1. **Lessons** — invoke `skill:lessons-learned` in `append` mode immediately after any user correction or agent mistake. Do not wait to be asked or batch lessons.
+2. **Order** — a batch starts only after every batch before it is ✅, unless it carries `**Parallel with:**` naming that batch.
+3. **Build** — execute the batch's `**Build steps:**` in order, observing each step's stated outcome before the next; an outcome that does not occur stops the batch. When done, mark the batch's items 🔄 (when running as a subagent under `skill:go-wild`, report status to the orchestrator instead of editing `plan.md`).
+4. **Verify** — run the batch's `**Verify:**` line, then each gate in its `**Gates:**` line in order, as defined under `### Gates`. When `Verify` passes mark the items ✅; mark each gate row ✅ when that gate passes.
+5. **Failure** — any failure resets the batch's ✅ rows to 🔄; fix and re-run rule 4 from the start.
+6. **Confirm writes** — after every status update, re-read the batch in `plan.md` and confirm the symbols landed.
 ```
 
-Status values: `⬜` pending · `🔄` in progress · `✅` completed. Default new items to `⬜`
-unless preserving status from an existing document.
+## Gate definitions
+
+Copy each gate the plan uses into its `### Gates` section (plus any strategy-specific gate from [build-strategies.md](build-strategies.md)).
+
+```markdown
+- **Necessity** — run two isolated subagents that share no context. *Test necessity* — given only the requirements and the batch's tests, confirm each test proves a stated requirement and none is redundant. *Code necessity* — given only the batch's tests and diff, confirm each changed line is needed by a test (removing it turns a test red). Passes only when both pass; a failing test is removed, failing code is removed or raised as an unstated requirement.
+- **DoD** — invoke `skill:<dod-skill-name>` (or the inline Definition of Done criteria) against the batch's output in a validation subagent. Mandatory. Passes only when every criterion passes, reported per criterion.
+- **Thomas** — dispatch `skill:thomas` as a subagent to execute every check in the batch's `Verify` line itself and confirm every other row of the batch is ✅. Passes only on an **APPROVED** verdict.
+- **Thomas (final)** — dispatch `skill:thomas` to re-run the global verify command and confirm every other row in `plan.md` is ✅. Passes only on an **APPROVED** verdict; the plan is complete only then.
+```
 
 ## Plan folder layout
 
@@ -110,27 +151,6 @@ skill.
 - Never write or overwrite `lessons.md` from this skill. If `skill:lessons-learned` is
   unavailable, surface the missing dependency instead of inlining a template.
 - Do not pre-populate lessons — they are earned during execution, not predicted.
-- **User corrections are logged automatically.** Whenever the user corrects the agent's
-  approach, output, or reasoning, immediately (without being asked) capture the lesson —
-  invoke `skill:lessons-learned` in `append` mode if available, otherwise write directly
-  to `lessons.md`.
-- **Agent mistakes are logged automatically.** Whenever the agent detects an error, fix it
-  first, then immediately capture the lesson the same way. Do not defer to end of session.
-
-## Execution rules (throughout every session using the plan)
-
-- **After every user correction / agent mistake:** capture the lesson immediately (see above).
-- **After every batch with a DoD Gate:** spawn a validation subagent to run all DoD
-  criteria before advancing; the DoD row must be ✅ before the next batch starts.
-- **After every status update to `plan.md`:** re-read the modified section and confirm the
-  ✅ symbols landed in the file before declaring a batch complete; if not, re-apply and re-read.
-- **After every batch (if Thomas is enabled):** invoke `skill:thomas` as a subagent after
-  the Verify step (and after the DoD Gate, if present). The Thomas row must be ✅ before the
-  next batch starts.
-- **Final batch — full-plan review (if Thomas is enabled):** the last batch includes a
-  Thomas Gate covering the entire plan — Thomas re-runs the full validation suite, reviews
-  every section of `plan.md` to confirm all rows are ✅, and issues a final APPROVED /
-  NOT APPROVED verdict. The plan is not complete until this verdict is APPROVED.
 
 ## Batching Rules
 
@@ -139,6 +159,8 @@ skill.
 - Do not mix unrelated risk areas in the same batch.
 - If a single item is large enough to need isolated validation, give it its own batch.
 - Each batch should leave the executor with a coherent validation target.
+- Mark batches `Parallel with` only when they touch disjoint files and neither needs the
+  other's output.
 
 ## Validation Rules
 
@@ -147,7 +169,7 @@ skill.
 - Prioritize commands found in `Taskfile.yml`, `package.json`, `README.md`, pipeline files, and existing plan documents.
 - When the task affects runtime behavior, specify the manual checks the executor must perform.
 - If validation cannot yet be determined, record the gap explicitly rather than inventing commands.
-- **If the user supplies a DoD or validation script:** record it verbatim under `## Definition of Done`, attach a `DoD Gate` to every batch, and spawn a validation subagent to execute every criterion after the batch lands — non-negotiable, reported pass/fail per criterion.
+- **If the user supplies a DoD or validation script:** record it verbatim in the Execution Config and name the DoD gate in every batch.
 
 ## Decision Points
 
